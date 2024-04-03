@@ -82,30 +82,30 @@ Resources:
       RoleArn: !Ref CodePipelineServiceRole
       Stages: 
         - Name: Source
-        Actions:
-          ActionTypeId: 
-            Category: Source
-            Owner: AWS
-            Provider: CodeStarSourceConnection
-            Version: 1
-        Configuration:
-          ConnectionArn: !Ref connection-with-github
-          FullRepositoryId: "manowill/static-site-cloudformation"
-          BranchName: "main"
-          OutputArtifactFormat: "CODE_ZIP"
-        RunOrder: 1
+          Actions:
+            ActionTypeId: 
+              Category: Source
+              Owner: AWS
+              Provider: CodeStarSourceConnection
+              Version: 1
+          Configuration:
+            ConnectionArn: !Ref connection-with-github
+            FullRepositoryId: "manowill/static-site-cloudformation"
+            BranchName: "main"
+            OutputArtifactFormat: "CODE_ZIP"
+          RunOrder: 1
 
         - Name: Deploy
-        Actions:
-          ActionTypeId:
-            Category: Deploy
-            Owner: AWS
-            Version: 1
-            Provider: S3
-          Configuration:
-            BucketName: !Ref BucketName
-            Extract: true
-          RunOrder: 2
+          Actions:
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Version: 1
+              Provider: S3
+            Configuration:
+              BucketName: !Ref BucketName
+              Extract: true
+            RunOrder: 2
 
       
 Outputs:
