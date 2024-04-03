@@ -88,7 +88,7 @@ Resources:
               Owner: AWS
               Provider: CodeStarSourceConnection
               Version: 1
-          Configuration:
+            Configuration:
             ConnectionArn: !Ref ConnectionWithGithub
             FullRepositoryId: "manowill/static-site-cloudformation"
             BranchName: "main"
