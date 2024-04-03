@@ -8,6 +8,9 @@ Parameters:
     Type: String
     Description: Enter a bucket name equal your domain name configurated in route 53. Example "myportolio.com"
     
+  connection-with-github:
+    Type: String
+    Description: the arn of connection
 Resources:
   S3Bucket:
     Type: 'AWS::S3::Bucket'
@@ -33,6 +36,77 @@ Resources:
               - - 'arn:aws:s3:::'
                 - !Ref S3Bucket
                 - /*
+
+  ArtifactBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-artifact
+
+  CodePipelineServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Ref Pipeline-Role
+      Path: /
+      AssumeRolePolicyDocument: |
+        {
+            "Statement": [{
+                "Effect": "Allow",
+                "Principal": { "Service": [ "codepipeline.amazonaws.com" ]},
+                "Action": [ "sts:AssumeRole" ]
+            }]
+        }
+      Policies:
+        - PolicyName: needed-policies
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource:
+                  - !Sub 'arn:aws:s3:::*'
+                Effect: Allow
+                Action:
+                  - 's3:*'
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - 'cloudformation:*'
+                  - 's3:*'
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore: 
+        Location: !ref ArtifactBucket
+        Type: S3
+      Name: S3-estatico-pipeline
+      PipelineType: V2
+      RoleArn: !Ref CodePipelineServiceRole
+      Stages: 
+        - Name: Source
+        Actions:
+          ActionTypeId: 
+            Category: Source
+            Owner: AWS
+            Provider: CodeStarSourceConnection
+            Version: 1
+        Configuration:
+          ConnectionArn: !Ref connection-with-github
+          FullRepositoryId: "manowill/static-site-cloudformation"
+          BranchName: "main"
+          OutputArtifactFormat: "CODE_ZIP"
+        RunOrder: 1
+
+        - Name: Deploy
+        Actions:
+          ActionTypeId:
+            Category: Deploy
+            Owner: AWS
+            Version: 1
+            Provider: S3
+          Configuration:
+            BucketName: !Ref BucketName
+            Extract: true
+          RunOrder: 2
+
       
 Outputs:
   WebsiteURL:
@@ -48,3 +122,8 @@ Outputs:
           - S3Bucket
           - DomainName
     Description: Name of S3 bucket to hold website content
+
+
+  Pipeline link:
+    Value: !Sub >-
+      https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
