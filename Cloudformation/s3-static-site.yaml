@@ -23,8 +23,8 @@ Resources:
         RestrictPublicBuckets : false
 
       WebsiteConfiguration:
-        IndexDocument: site/index.html
-        ErrorDocument: site/error.html
+        IndexDocument: index.html
+        ErrorDocument: error.html
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
