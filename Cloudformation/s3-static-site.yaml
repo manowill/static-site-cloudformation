@@ -11,16 +11,23 @@ Parameters:
   ConnectionWithGithub:
     Type: String
     Description: the arn of connection
+
 Resources:
+
   S3Bucket:
-    Type: 'AWS::S3::Bucket'
+    Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicPolicy : false
+        RestrictPublicBuckets : false
+
       WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: error.html
+        IndexDocument: site/index.html
+        ErrorDocument: site/error.html
+
   BucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
+    Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref S3Bucket
       PolicyDocument:
@@ -38,12 +45,12 @@ Resources:
                 - /*
 
   ArtifactBucket:
-    Type: 'AWS::S3::Bucket'
+    Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-artifact
+      BucketName: pipeline-dada-artifact
 
   CodePipelineServiceRole:
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
       RoleName: CodePipelineServiceRole
       Path: /
@@ -60,16 +67,9 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              - Resource:
-                  - !Sub 'arn:aws:s3:::*'
-                Effect: Allow
-                Action:
-                  - 's3:*'
               - Resource: '*'
                 Effect: Allow
-                Action:
-                  - 'cloudformation:*'
-                  - 's3:*'
+                Action: '*'
 
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -79,33 +79,39 @@ Resources:
         Type: S3
       Name: S3-estatico-pipeline
       PipelineType: V2
-      RoleArn: !Ref CodePipelineServiceRole
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
       Stages: 
         - Name: Source
           Actions:
-            ActionTypeId: 
-              Category: Source
-              Owner: AWS
-              Provider: CodeStarSourceConnection
-              Version: 1
-            Configuration:
-              ConnectionArn: !Ref ConnectionWithGithub
-              FullRepositoryId: "manowill/static-site-cloudformation"
-              BranchName: "main"
-              OutputArtifactFormat: "CODE_ZIP"
-          RunOrder: 1
+            - Name: Github
+              ActionTypeId: 
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: 1
+              Configuration:
+                ConnectionArn: !Ref ConnectionWithGithub
+                FullRepositoryId: "manowill/static-site-cloudformation"
+                BranchName: "main"
+                OutputArtifactFormat: "CODE_ZIP"
+              OutputArtifacts:
+                - Name: Repository
+              RunOrder: 1
 
         - Name: Deploy
           Actions:
-            ActionTypeId:
-              Category: Deploy
-              Owner: AWS
-              Version: 1
-              Provider: S3
-            Configuration:
-              BucketName: !Ref BucketName
-              Extract: true
-            RunOrder: 2
+            - Name: DeployOnS3
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              Configuration:
+                BucketName: !Ref S3Bucket
+                Extract: true
+              InputArtifacts:
+                - Name: Repository
+              RunOrder: 2
 
       
 Outputs:
