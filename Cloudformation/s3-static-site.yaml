@@ -89,10 +89,10 @@ Resources:
               Provider: CodeStarSourceConnection
               Version: 1
             Configuration:
-            ConnectionArn: !Ref ConnectionWithGithub
-            FullRepositoryId: "manowill/static-site-cloudformation"
-            BranchName: "main"
-            OutputArtifactFormat: "CODE_ZIP"
+              ConnectionArn: !Ref ConnectionWithGithub
+              FullRepositoryId: "manowill/static-site-cloudformation"
+              BranchName: "main"
+              OutputArtifactFormat: "CODE_ZIP"
           RunOrder: 1
 
         - Name: Deploy
