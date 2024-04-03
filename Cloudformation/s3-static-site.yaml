@@ -75,7 +75,7 @@ Resources:
     Type: AWS::CodePipeline::Pipeline
     Properties:
       ArtifactStore: 
-        Location: !ref ArtifactBucket
+        Location: !Ref ArtifactBucket
         Type: S3
       Name: S3-estatico-pipeline
       PipelineType: V2
