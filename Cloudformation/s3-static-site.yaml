@@ -8,7 +8,7 @@ Parameters:
     Type: String
     Description: Enter a bucket name equal your domain name configurated in route 53. Example "myportolio.com"
     
-  connection-with-github:
+  ConnectionWithGithub:
     Type: String
     Description: the arn of connection
 Resources:
@@ -89,7 +89,7 @@ Resources:
               Provider: CodeStarSourceConnection
               Version: 1
           Configuration:
-            ConnectionArn: !Ref connection-with-github
+            ConnectionArn: !Ref ConnectionWithGithub
             FullRepositoryId: "manowill/static-site-cloudformation"
             BranchName: "main"
             OutputArtifactFormat: "CODE_ZIP"
