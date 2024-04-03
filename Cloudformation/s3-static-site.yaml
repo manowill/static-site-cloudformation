@@ -124,6 +124,6 @@ Outputs:
     Description: Name of S3 bucket to hold website content
 
 
-  Pipeline link:
+  PipelineLink:
     Value: !Sub >-
       https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
