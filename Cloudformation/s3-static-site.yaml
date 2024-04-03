@@ -45,7 +45,7 @@ Resources:
   CodePipelineServiceRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Ref CodePipelineServiceRole
+      RoleName: CodePipelineServiceRole
       Path: /
       AssumeRolePolicyDocument: |
         {
