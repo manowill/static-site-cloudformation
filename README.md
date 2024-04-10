@@ -6,7 +6,7 @@
 
 Como funciona:
 
-1. A partir do momento que é feito uma alteração na branch main deste repositório uma esteira (pipeline) de eventos  começará a funcionar.
+1. A partir do momento que é feito uma alteração na branch main deste repositório uma esteira de eventos (pipeline) começará a funcionar.
 
 2. A pipeline irá fazer um download de todo o codigo da branch main, a qual foi configurada.
 
